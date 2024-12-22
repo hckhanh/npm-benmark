@@ -1,0 +1,60 @@
+name: Run Package Installation With Matrix
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  install-packages:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package-manager: [pnpm, yarn, npm, bun]
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js (uses the latest version by default)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22" # or any version of your choice
+          cache: ${{ matrix.package-manager }}
+
+      # Install package managers if needed
+      - name: Install pnpm (if needed)
+        if: matrix.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install bun (if needed)
+        if: matrix.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Install dependencies using the selected package manager
+      - name: Install dependencies with ${{ matrix.package-manager }}
+        run: |
+          case ${{ matrix.package-manager }} in
+            pnpm) pnpm install;;
+            yarn) yarn install;;
+            npm) npm install;;
+            bun) bun install;;
+          esac
+
+      # Verify installation
+      - name: Verify ${{ matrix.package-manager }} installation
+        run: |
+          case ${{ matrix.package-manager }} in
+            pnpm) pnpm --version;;
+            yarn) yarn --version;;
+            npm) npm --version;;
+            bun) bun --version;;
+          esac
