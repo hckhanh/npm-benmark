@@ -74,6 +74,6 @@
     "ts-node": "^10.0.0",
     "typescript": "5.7.2",
     "unplugin-tailwindcss-mangle": "4.0.2",
-    "vite": "6.0.6"
+    "vite": "6.0.13"
   }
 }
